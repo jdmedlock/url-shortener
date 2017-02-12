@@ -40,3 +40,22 @@ The URL ```https://little-url.herokuapp.com/2871``` will redirect to ```https://
 - MongoDB
 - Mongoose
 - NodeJS
+- Valid-Url
+
+##Project Creation
+
+1. mkdir urlshortener
+2. cd urlshortener
+3. express
+  - Build the application scaffolding using the express generator.
+4. npm init
+  - Create and initialize the package.json file
+5. echo node_modules > .gitignore
+  - Exclude files in the node_modules directory from being managed by git.
+
+##Project Runtimes (Local)
+
+1. mongodb
+  - Start the MongoDB server
+2. nodemon app
+  - Start the application
