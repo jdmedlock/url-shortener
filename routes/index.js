@@ -13,7 +13,7 @@
 //    http://www.example.com format, the JSON response will contain an error
 //    instead.
 // 3. User Story: When I visit that shortened URL, it will redirect me to my
-//    original link. 
+//    original link.
 //
 // Example creation usage:
 //
@@ -34,6 +34,7 @@
 const config = require('../config');
 const express = require('express');
 const mongodb = require('mongodb');
+const path = require('path');
 const shortid = require('shortid');
 const validUrl = require('valid-url');
 
@@ -47,14 +48,12 @@ var mongoClient = mongodb.MongoClient;
 // -------------------------------------------------------------
 
 // Route - Home page (http://localhost:3000)
-router.get('/', function(request, response, next) {
-  response.render('index', {
-    title: 'Express'
-  });
+router.get("/", function(request, response, next) {
+  response.sendFile(path.join(__dirname + "/../views/index.html"));
 });
 
 // Route - Shorten a new URL (http://localhost:3000/new/<url>)
-router.get('/new/:longurl*', function(request, response, next) {
+router.get("/new/:longurl*", function(request, response, next) {
   mongoClient.connect(mongoUri, function(err, db) {
     if (err) {
       console.log("Unable to establish connection to MongoDB", err);
@@ -90,7 +89,7 @@ router.get('/new/:longurl*', function(request, response, next) {
 });
 
 // Route - Use a shortened URL to access the website (http://localhost:3000/<shortcode>)
-router.get('/:shortcode', function (request, response, next) {
+router.get("/:shortcode", function (request, response, next) {
   mongoClient.connect(mongoUri, function (err, db) {
     if (err) {
       console.log("Unable to establish connection to MongoDB", err);
@@ -98,7 +97,7 @@ router.get('/:shortcode', function (request, response, next) {
       console.log("Successfully connected to MongoDB");
       var collection = db.collection('links');
       var shortCode = request.params.shortcode;
-      var findLink = function (db, callback) {
+      var findLink = (db, callback) => {
         collection.findOne({"short": shortCode}, { url: 1, _id: 0 }, function (err, doc) {
           if (doc != null) {
             response.redirect(doc.url);
