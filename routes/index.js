@@ -29,6 +29,27 @@
 //
 //   The URL https://little-url.herokuapp.com/2871 will redirect to
 //   https://www.google.com/
+//
+// Special considerations:
+//
+//   Prior to starting this exercise I had finished learnyounode and
+//   learnyoumongo, but they did not adequately prepare me for this API
+//   project. To make up for this I used a combination of books, websites,
+//   YouTube videos, and a Udemy course to prepare. Of most value was the
+//   tutorial from Michael Lefkowitz (http://lefkowitz.me/thoughts/?p=53).
+//
+//   To ensure that I was learning rather than just copying the information
+//   from the Lefkowitz tutorial I've made the following changes and additions
+//
+//   1. Generate the hash of the long URL using a Base-64 algorithm
+//   2. Use Mongoose on top of MongoDB
+//   3. Implement routes to incorporate the following functionality
+//      - /new/<url> ... Add a new URL to the database (original reqmnt.)
+//      - /<shortcode> .. Redirect to the original long URL (original reqmnt.)
+//      - /urls ... Display all URLs and their short codes (new reqmnt.)
+//      - /delete/<url> ... Remove the URL entry from the DB (new reqmnt.)
+//      - /delete/<shortcode> ... Remove the URL entry from the DB (new reqmnt.)
+//   4. Generate all errors as JSON of the format {error: <message>}
 
 "use strict";
 const config = require('../config');
