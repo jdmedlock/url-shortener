@@ -13,7 +13,7 @@
 //    http://www.example.com format, the JSON response will contain an error
 //    instead.
 // 3. User Story: When I visit that shortened URL, it will redirect me to my
-//    original link.
+//    original link. 
 //
 // Example creation usage:
 //

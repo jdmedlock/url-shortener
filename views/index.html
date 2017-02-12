@@ -1,0 +1,63 @@
+<!--
+File Name: index.html
+Date: 01/22/2016
+Programmer: Jim Medlock
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="author" content="Jim Medlock">
+    <meta name="subject" content="Timestamp Microservice">
+    <meta name="datecreated" content="20170122">
+    <meta name="datereviewed" content="20170122">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>URL Shortener Microservice</title>
+
+    <!-- ALL CSS GOES IN THE META HEAD SECTION -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.css" integrity="sha256-uHu2MAd1LvCOVEAhvMld4LpJi7dUGS7GVzvG/5B3hlo=" crossorigin="anonymous" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+</head>
+
+<body>
+   <!-- Main webpage body -->
+   <div class="container-fluid">
+      <h1>API Basejump: URL Shortener Microservice</h1>
+      <h3>User stories:</h3>
+      <ol>
+         <li>I can pass a URL as a parameter and I will receive a shortened
+           URL in the JSON response.
+         </li>
+         <li>If I pass an invalid URL that doesn't follow the valid
+           http://www.example.com format, the JSON response will contain an
+           error instead.
+         </li>
+         <li>When I visit that shortened URL, it will redirect me to my
+           original link.
+         </li>
+      </ol>
+      <h3>Example creation usage:</h3>
+      <ul>
+         <li><pre>https://little-url.herokuapp.com/new/https://www.google.com</pre></li>
+         <li><pre>https://little-url.herokuapp.com/new/http://foo.com:80</pre></li>
+      </ul>
+      <h3>Example creation output:</h3>
+      <ul>
+         <li><pre>{ "original_url":"http://foo.com:80", "short_url":"https://little-url.herokuapp.com/8170" }</pre></li>
+      </ul>
+      <h3>Example usage:</h3>
+      <p>
+        The URL <pre>https://little-url.herokuapp.com/2871</pre> will redirect
+        to <pre>https://www.google.com/</pre>
+      </p>
+   </div> <!-- end main webpage body -->
+
+   <!-- ALL JAVASCRIPT LINKS GOES RIGHT BEFORE THE ENDING BODY TAG -->
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</body>
+
+</html>

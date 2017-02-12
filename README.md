@@ -9,7 +9,7 @@ If you can't remember how to do this, revisit https://freecodecamp.com/challenge
 Checkout this wiki article for tips on integrating MongoDB on Heroku.
 https://github.com/FreeCodeCamp/FreeCodeCamp/wiki/Using-MongoDB-And-Deploying-To-Heroku
 
-##User Stories
+##User Stories 
 
 Implement the following users stories in this exercise.
 
