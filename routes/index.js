@@ -73,81 +73,87 @@ const mongoClient = mongodb.MongoClient;
 
 // Route - Home page (http://localhost:3000)
 router.get("/", function(request, response, next) {
-  response.sendFile(path.join(__dirname + "/../views/index.html"));
+   response.sendFile(path.join(__dirname + "/../views/index.html"));
 });
 
 // Route - Shorten a new URL (http://localhost:3000/new/<url>)
 router.get("/new/:longurl(*)", function(request, response, next) {
-  mongoClient.connect(mongoUri, function(err, db) {
-    if (err) {
-      console.log("Unable to establish connection to MongoDB", err);
-    } else {
-      console.log("Successfully connected to MongoDB");
-      const urlParam = request.params.longurl;
-      const collection = db.collection("links");
-      const localUrl = request.get("host") + "/";
+   mongoClient.connect(mongoUri)
+   .then((db) => {
+         console.log("Successfully connected to MongoDB");
+         const urlParam = request.params.longurl;
+         const collection = db.collection("links");
+         const localUrl = request.get("host") + "/";
 
-      // Create a variable containing the callback function to be used to
-      // add the new URL to the database.
-      const newLink = function(db, callback) {
-        if (validUrl.isUri(urlParam)) {
-          const shortCode = shortid.generate();
-          const newUrl = {
-            url: urlParam,
-            short: shortCode
-          };
-          collection.insert([newUrl]);
-          response.json({
-            original_url: urlParam,
-            short_url: localUrl + shortCode
-          });
-        } else {
-          response.json({
-            error: "Incorrect URL format. Ensure that your URL has a valid protocol and format. " +
-              urlParam
-          });
-        };
-      };
-
+         // Create a variable containing the callback function to be used to
+         // add the new URL to the database.
+         if (validUrl.isUri(urlParam)) {
+            const shortCode = shortid.generate();
+            const newUrl = {
+               url: urlParam,
+               short: shortCode
+            };
+            collection.insert([newUrl]);
+            response.json({
+               original_url: urlParam,
+               short_url: localUrl + shortCode
+            });
+         } else {
+            response.json({
+               error: "Incorrect URL format. Ensure that your URL has a valid protocol and format. " +
+                  urlParam
+            });
+         };
+      })
+      .catch((error) => {
+         console.log("Unable to establish connection to MongoDB", err);
+      });
+/*
       // Add the new URL to the database and close the database connection
       // when completed
       newLink(db, function() {
-        db.close();
+         db.close();
       });
-    };
-  });
+*/
 });
 
 // Route - Use a shortened URL to access the website (http://localhost:3000/<shortcode>)
-router.get("/:shortcode", function (request, response, next) {
-  mongoClient.connect(mongoUri, function (err, db) {
-    if (err) {
-      console.log("Unable to establish connection to MongoDB", err);
-    } else {
-      console.log("Successfully connected to MongoDB");
-      const collection = db.collection('links');
-      const shortCode = request.params.shortcode;
+router.get("/:shortcode", function(request, response, next) {
+   mongoClient.connect(mongoUri, function(err, db) {
+      if (err) {
+         console.log("Unable to establish connection to MongoDB", err);
+      } else {
+         console.log("Successfully connected to MongoDB");
+         const collection = db.collection('links');
+         const shortCode = request.params.shortcode;
 
-      // Create a variable containing the callback function to be used to
-      // retrieve the and display the long URL from the database based on its
-      // short code.
-      const findLink = (db, callback) => {
-        collection.findOne({"short": shortCode}, { url: 1, _id: 0 }, function (err, doc) {
-          if (doc != null) {
-            response.redirect(doc.url);
-          } else {
-            response.json({ error: "No corresponding shortlink found in the database." });
-          };
-        });
+         // Create a variable containing the callback function to be used to
+         // retrieve the and display the long URL from the database based on its
+         // short code.
+         const findLink = (db, callback) => {
+            collection.findOne({
+               "short": shortCode
+            }, {
+               url: 1,
+               _id: 0
+            }, function(err, doc) {
+               if (doc != null) {
+                  response.redirect(doc.url);
+               } else {
+                  response.json({
+                     error: "No corresponding shortlink found in the database."
+                  });
+               };
+            });
+         };
+
+         // Retrieve and display the URL and then close the database connection
+         // when completed
+         findLink(db, function() {
+            db.close();
+         });
       };
-
-      // Retrieve and display the URL and then close the database connection
-      // when completed
-      findLink(db, function () {
-        db.close();
-      });
-    };
-  });
+   });
 });
 
 module.exports = router;
