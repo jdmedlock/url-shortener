@@ -50,6 +50,8 @@
 //      - /delete/<url> ... Remove the URL entry from the DB (new reqmnt.)
 //      - /delete/<shortcode> ... Remove the URL entry from the DB (new reqmnt.)
 //   4. Generate all errors as JSON of the format {error: <message>}
+//   5. Heavily comment code to use this application as a reference for future
+//      projects.
 
 "use strict";
 const config = require('../config');
@@ -61,8 +63,9 @@ const validUrl = require('valid-url');
 
 const router = express.Router();
 
-var mongoUri = 'mongodb://' + config.db.host + '/' + config.db.name;
-var mongoClient = mongodb.MongoClient;
+// Establish a mongo connection using settings from the config.js file
+const mongoUri = 'mongodb://' + config.db.host + '/' + config.db.name;
+const mongoClient = mongodb.MongoClient;
 
 // -------------------------------------------------------------
 // Express Route Definitions
@@ -74,7 +77,7 @@ router.get("/", function(request, response, next) {
 });
 
 // Route - Shorten a new URL (http://localhost:3000/new/<url>)
-router.get("/new/:longurl*", function(request, response, next) {
+router.get("/new/:longurl(*)", function(request, response, next) {
   mongoClient.connect(mongoUri, function(err, db) {
     if (err) {
       console.log("Unable to establish connection to MongoDB", err);
@@ -83,10 +86,13 @@ router.get("/new/:longurl*", function(request, response, next) {
       const urlParam = request.params.longurl;
       const collection = db.collection("links");
       const localUrl = request.get("host") + "/";
-      let newLink = function(db, callback) {
+
+      // Create a variable containing the callback function to be used to
+      // add the new URL to the database.
+      const newLink = function(db, callback) {
         if (validUrl.isUri(urlParam)) {
-          var shortCode = shortid.generate();
-          var newUrl = {
+          const shortCode = shortid.generate();
+          const newUrl = {
             url: urlParam,
             short: shortCode
           };
@@ -102,6 +108,9 @@ router.get("/new/:longurl*", function(request, response, next) {
           });
         };
       };
+
+      // Add the new URL to the database and close the database connection
+      // when completed
       newLink(db, function() {
         db.close();
       });
@@ -116,9 +125,13 @@ router.get("/:shortcode", function (request, response, next) {
       console.log("Unable to establish connection to MongoDB", err);
     } else {
       console.log("Successfully connected to MongoDB");
-      var collection = db.collection('links');
-      var shortCode = request.params.shortcode;
-      var findLink = (db, callback) => {
+      const collection = db.collection('links');
+      const shortCode = request.params.shortcode;
+
+      // Create a variable containing the callback function to be used to
+      // retrieve the and display the long URL from the database based on its
+      // short code.
+      const findLink = (db, callback) => {
         collection.findOne({"short": shortCode}, { url: 1, _id: 0 }, function (err, doc) {
           if (doc != null) {
             response.redirect(doc.url);
@@ -128,6 +141,8 @@ router.get("/:shortcode", function (request, response, next) {
         });
       };
 
+      // Retrieve and display the URL and then close the database connection
+      // when completed
       findLink(db, function () {
         db.close();
       });
