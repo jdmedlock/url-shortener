@@ -49,8 +49,9 @@
 //      - /urls ... Display all URLs and their short codes (new reqmnt.)
 //      - /delete/<url> ... Remove the URL entry from the DB (new reqmnt.)
 //      - /delete/<shortcode> ... Remove the URL entry from the DB (new reqmnt.)
-//   4. Generate all errors as JSON of the format {error: <message>}
-//   5. Heavily comment code to use this application as a reference for future
+//   4. Use Promises to eliminate "Callback Hell"
+//   5. Generate all errors as JSON of the format {error: <message>}
+//   6. Heavily comment code to use this application as a reference for future
 //      projects.
 
 "use strict";
@@ -73,9 +74,27 @@ const mongoClient = mongodb.MongoClient;
 // Express Route Definitions
 // -------------------------------------------------------------
 
-// Route - Home page (http://localhost:3000)
+// Route - Home page
+//         (http://localhost:3000)
 router.get("/", function(request, response, next) {
   response.sendFile(path.join(__dirname + "/../views/index.html"));
+});
+
+// Route - Delete a URL from the database
+//         (http://localhost:3000/delete/<url or shortcode>)
+router.get("/delete/:entryParam", function(request, response, next) {
+  mongoClient.connect(mongoUri)
+    .then((db) => {
+      console.log("Successfully connected to MongoDB");
+      const urlParam = request.params.longurl;
+      const collection = db.collection("links");
+
+      // TODO: locate and delete the url from the database
+    })
+    .catch((error) => {
+      console.log("Unable to establish connection to MongoDB",
+        err);
+    });
 });
 
 // Route - Shorten a new URL (http://localhost:3000/new/<url>)
@@ -91,61 +110,120 @@ router.get("/new/:longurl(*)", function(request, response, next) {
       // it to the database
       if (validUrl.isUri(urlParam)) {
         const urlDocument = collection.findOne({
-          url: urlParam
-        }, function(err, document) {
-          console.log("urlDocument: ", urlDocument);
-          if (document) {
+            url: urlParam
+          })
+          .then((document) => {
+            if (document) {
+              response.json({
+                error: "Duplicate URL in database." + urlParam
+              });
+            } else {
+              const shortCode = shortid.generate();
+              const newUrl = {
+                url: urlParam,
+                short_code: shortCode
+              };
+              collection.insert([newUrl])
+                .then(() => {
+                  response.json({
+                    url: urlParam,
+                    short_code: shortCode,
+                    short_url: localUrl + shortCode
+                  });
+                })
+                .catch((error) => {
+                  response.json({
+                    error: "Error inserting URL in database. Error: " +
+                      error
+                  });
+                });
+            }
+          })
+          .catch((error) => {
             response.json({
-              error: "Duplicate URL. " + urlParam
+              error: "Error encountered attempting to find URL in database. Error:" +
+                error
             });
-          } else {
-            const shortCode = shortid.generate();
-            const newUrl = {
-              url: urlParam,
-              short_code: shortCode
-            };
-            collection.insert([newUrl]);
-            response.json({
-              url: urlParam,
-              short_code: shortCode,
-              short_url: localUrl + shortCode
-            });
-          }
-        });
+          });
       } else {
         response.json({
           error: "Incorrect URL format. Ensure that your URL has a valid protocol and format. " +
             urlParam
         });
-      };
+      }
     })
     .catch((error) => {
-      console.log("Unable to establish connection to MongoDB", err);
+      console.log("Unable to establish connection to MongoDB",
+        err);
     });
 });
 
-// Route - Display all url entries in the database (http://localhost:3000/urls)
+// Route - Display all url entries in the database
+//         (http://localhost:3000/urls)
 router.get("/urls/", function(request, response, next) {
-    mongoClient.connect(mongoUri)
-      .then((db) => {
-        console.log("Successfully connected to MongoDB");
-        const collection = db.collection('links');
-        collection.find().toArray((err, urls) => {
+  mongoClient.connect(mongoUri)
+    .then((db) => {
+      console.log("Successfully connected to MongoDB");
+      const collection = db.collection('links');
+      collection.find().toArray()
+        .then((urls) => {
           if (urls != null) {
-            console.log("urls: ", urls);
+            response.json({
+              urls: urls
+            });
           } else {
             response.json({
-              error: "No corresponding shortlink found in the database."
+              error: "There are no URLs in the database"
             });
-          };
+          }
+        })
+        .catch((error) => {
+          response.json({
+            error: "Error retrieving all urls from database. Error: ",
+            error
+          });
         });
-      })
-      .catch((error) => {
-        console.log("Unable to establish connection to MongoDB", err);
-      });
+    })
+    .catch((error) => {
+      console.log("Unable to establish connection to MongoDB",
+        error);
+    });
 });
 
-// Route - Use a shortened URL to access the website (http://localhost:3000/<shortcode>)
+// Route - Display all url entries in the database
+//         (http://localhost:3000/urls)
+router.get("/urls/", function(request, response, next) {
+  mongoClient.connect(mongoUri)
+    .then((db) => {
+      console.log("Successfully connected to MongoDB");
+      const collection = db.collection('links');
+      collection.find().toArray()
+        .then((urls) => {
+          if (urls != null) {
+            response.json({
+              urls: urls
+            });
+          } else {
+            response.json({
+              error: "There are no URLs in the database"
+            });
+          }
+        })
+        .catch((error) => {
+          response.json({
+            error: "Error retrieving all urls from database. Error: ",
+            error
+          });
+        });
+    })
+    .catch((error) => {
+      console.log("Unable to establish connection to MongoDB",
+        error);
+    });
+});
+
+// Route - Use a shortened URL to access the website
+//         (http://localhost:3000/<shortcode>)
 router.get("/:shortcode", function(request, response, next) {
   mongoClient.connect(mongoUri)
     .then((db) => {
@@ -155,24 +233,30 @@ router.get("/:shortcode", function(request, response, next) {
 
       // Use the value of the short code parameter to retrieve the and display
       // the long URL from the database.
-      collection.findOne({
-        "short_code": shortCode
-      }, {
-        url: 1,
-        _id: 0
-      }, function(err, doc) {
-        if (doc != null) {
-          response.redirect(doc.url);
-        } else {
+      collection.findOne({ "short_code": shortCode }, { url: 1, _id: 0 })
+        .then((document) => {
+          if (document != null) {
+            response.redirect(document.url);
+          } else {
+            response.json({
+              error: "No corresponding shortlink found in the database."
+            });
+          };
+        })
+        .catch((error) => {
           response.json({
-            error: "No corresponding shortlink found in the database."
+            error: "Error encountered attempting to find the URL. Error: " +
+              error
           });
-        };
-      });
+        });
     })
     .catch((error) => {
-      console.log("Unable to establish connection to MongoDB", err);
+      response.json({
+        error: "Unable to establish connection to MongoDB. Error: " +
+          error
+      });
     });
 });
+
 
 module.exports = router;

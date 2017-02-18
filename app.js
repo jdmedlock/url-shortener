@@ -35,7 +35,7 @@ app.use('/users', users);
 app.use(function(request, response, next) {
   var err = new Error('Not Found');
   err.status = 404;
-  next(err); 
+  next(err);
 });
 
 // error handler
