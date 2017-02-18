@@ -73,7 +73,8 @@ const router = express.Router();
 const UrlSchema = require("../model/urlschema.js");
 
 // Establish a mongo connection using settings from the config.js file
-const mongoUri = "mongodb://" + config.db.host + "/" + config.db.name;
+//const mongoUri = "mongodb://" + config.db.host + "/" + config.db.name;
+const mongoUri = process.env.MONGOLAB_URI
 const mongoClient = mongodb.MongoClient;
 
 // -------------------------------------------------------------
