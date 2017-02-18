@@ -55,7 +55,6 @@ Implement the following users stories in this exercise.
 
 - Express
 - MongoDB
-- Mongoose
 - NodeJS
 - Valid-Url
 
