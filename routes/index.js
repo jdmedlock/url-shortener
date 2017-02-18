@@ -15,6 +15,14 @@
 // 3. User Story: When I visit that shortened URL, it will redirect me to my
 //    original link.
 //
+// Additional user stories
+//
+// 4. User Story: When I pass the 'urls' keyword in the url, all the URLs in
+//    the database will be displayed in JSON format.
+// 5. When I pass the 'delete' keyword in the url along with either a
+//    parameter containing the URL or its shortcode, that URL will be deleted
+//    from the database.
+//
 // Example creation usage:
 //
 //   https://little-url.herokuapp.com/new/https://www.google.com
@@ -42,23 +50,21 @@
 //   from the Lefkowitz tutorial I've made the following changes and additions
 //
 //   1. Generate the hash of the long URL using a Base-64 algorithm
-//   2. Use Mongoose on top of MongoDB
-//   3. Implement routes to incorporate the following functionality
+//   2. Implement routes to incorporate the following functionality
 //      - /new/<url> ... Add a new URL to the database (original reqmnt.)
 //      - /<shortcode> .. Redirect to the original long URL (original reqmnt.)
 //      - /urls ... Display all URLs and their short codes (new reqmnt.)
 //      - /delete/<url> ... Remove the URL entry from the DB (new reqmnt.)
 //      - /delete/<shortcode> ... Remove the URL entry from the DB (new reqmnt.)
-//   4. Use Promises to eliminate "Callback Hell"
-//   5. Generate all errors as JSON of the format {error: <message>}
-//   6. Heavily comment code to use this application as a reference for future
+//   3. Use Promises to eliminate "Callback Hell"
+//   4. Generate all errors as JSON of the format {error: <message>}
+//   5. Heavily comment code to use this application as a reference for future
 //      projects.
 
 "use strict";
 const config = require("../config");
 const express = require("express");
 const mongodb = require("mongodb");
-const mongoose = require("mongoose");
 const path = require("path");
 const shortid = require("shortid");
 const validUrl = require("valid-url");
@@ -80,20 +86,46 @@ router.get("/", function(request, response, next) {
   response.sendFile(path.join(__dirname + "/../views/index.html"));
 });
 
-// Route - Delete a URL from the database
+// Route - Delete a URL from the database given either a full URL or its
+//         corresponding shortcode
 //         (http://localhost:3000/delete/<url or shortcode>)
-router.get("/delete/:entryParam", function(request, response, next) {
+router.get("/delete/:dbEntryId(*)", function(request, response, next) {
   mongoClient.connect(mongoUri)
     .then((db) => {
       console.log("Successfully connected to MongoDB");
-      const urlParam = request.params.longurl;
+      const entryParam = request.params.dbEntryId;
       const collection = db.collection("links");
+      let searchFilter = {};
 
-      // TODO: locate and delete the url from the database
+      // Determine if the entryParam is a full URL or a shortcode.
+      if (validUrl.isUri(entryParam)) {
+        searchFilter["url"] = entryParam;
+      } else {
+        searchFilter["short_code"] = entryParam;
+      }
+      console.log("searchFilter: ", searchFilter);
+      const urlDocument = collection.findOneAndDelete(searchFilter)
+        .then((document) => {
+          if (document) {
+            response.json({
+              error: "Entry has been removed from the database. " + entryParam
+            });
+          } else {
+            response.json({
+              error: "Entry was not found in the database. " + entryParam
+            });
+          }
+        })
+        .catch((error) => {
+          response.json({
+            error: "Error encountered attempting to delete URL from the database. Error:" +
+              error
+          });
+        });
     })
     .catch((error) => {
       console.log("Unable to establish connection to MongoDB",
-        err);
+        error);
     });
 });
 
@@ -154,38 +186,6 @@ router.get("/new/:longurl(*)", function(request, response, next) {
     })
     .catch((error) => {
       console.log("Unable to establish connection to MongoDB",
-        err);
-    });
-});
-
-// Route - Display all url entries in the database
-//         (http://localhost:3000/urls)
-router.get("/urls/", function(request, response, next) {
-  mongoClient.connect(mongoUri)
-    .then((db) => {
-      console.log("Successfully connected to MongoDB");
-      const collection = db.collection('links');
-      collection.find().toArray()
-        .then((urls) => {
-          if (urls != null) {
-            response.json({
-              urls: urls
-            });
-          } else {
-            response.json({
-              error: "There are no URLs in the database"
-            });
-          }
-        })
-        .catch((error) => {
-          response.json({
-            error: "Error retrieving all urls from database. Error: ",
-            error
-          });
-        });
-    })
-    .catch((error) => {
-      console.log("Unable to establish connection to MongoDB",
         error);
     });
 });
@@ -233,7 +233,12 @@ router.get("/:shortcode", function(request, response, next) {
 
       // Use the value of the short code parameter to retrieve the and display
       // the long URL from the database.
-      collection.findOne({ "short_code": shortCode }, { url: 1, _id: 0 })
+      collection.findOne({
+          "short_code": shortCode
+        }, {
+          url: 1,
+          _id: 0
+        })
         .then((document) => {
           if (document != null) {
             response.redirect(document.url);
