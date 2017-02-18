@@ -13,26 +13,43 @@ https://github.com/FreeCodeCamp/FreeCodeCamp/wiki/Using-MongoDB-And-Deploying-To
 
 Implement the following users stories in this exercise.
 
-1. User Story:  I can pass a URL as a parameter and I will receive a shortened
-URL in the JSON response.
-2. User Story: If I pass an invalid URL that doesn't follow the valid
-http://www.example.com format, the JSON response will contain an error instead.
-3. User Story: When I visit that shortened URL, it will redirect me to my
-original link.
+1. I can pass a URL as a parameter and I will receive a shortened
+  URL in the JSON response.
 
-##Example creation usage:
-```
-https://little-url.herokuapp.com/new/https://www.google.com
-https://little-url.herokuapp.com/new/http://foo.com:80
-```
+  **Usage:** ```https://aurlshortener.herokuapp.com/new/https://www.google.com```
 
-##Example creation output:
-```
-{ "original_url":"http://foo.com:80", "short_url":"https://little-url.herokuapp.com/8170" }
-```
+  **Output:** ```{"_id":"58a8c8d015d41800111d733d","url":"http://www.google.com","short_code":"Sk_ROHIYx"}```
 
-##Usage:
-The URL ```https://little-url.herokuapp.com/2871``` will redirect to ```https://www.google.com/```
+2. If I pass an invalid URL that doesn't follow the valid
+  http://www.example.com format, the JSON response will contain an
+  error instead.
+
+  **Usage:** ```https://aurlshortener.herokuapp.com/new/blahblahblah```
+
+  **Output:** ```{"error":"Incorrect URL format. Ensure that your URL has a valid protocol and format. blahblahblah"}```
+3. When I visit that shortened URL, it will redirect me to my
+  original link.
+
+  **Usage:** ```https://aurlshortener.herokuapp.com/Sk_ROHIYx```
+
+  **Output:** ```https://www.google.com/```
+4. When I pass the 'urls' keyword in the url, all the URLs in the
+  database will be displayed in JSON format.
+
+  **Usage:** ```https://aurlshortener.herokuapp.com/urls```
+
+  **Output:** ```{"urls":[{"_id":"58a860775d711608d7c607fc","url":"http://www.google.com","short_code":"rylKxkIYg"}]}```
+5. When I pass the 'delete' keyword in the url along with either a
+  parameter containing the URL or its shortcode, that URL will be
+  deleted from the database.
+
+  **Usage (w/URL):** ```https://aurlshortener.herokuapp.com/delete/www.google.com```
+
+  **Output:** ```{"entry_deleted": [{"_id":"58a860775d711608d7c607fc","url":"http://www.google.com","short_code":"rylKxkIYg"}]}```
+
+  **Usage (w/short code):** ```https://aurlshortener.herokuapp.com/delete/rylKxkIYg```
+
+  **Output:** ```{"entry_deleted": [{"_id":"58a860775d711608d7c607fc","url":"http://www.google.com","short_code":"rylKxkIYg"}]}```
 
 ##Project Dependencies
 
