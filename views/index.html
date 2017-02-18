@@ -30,31 +30,31 @@ Programmer: Jim Medlock
       <ol>
          <li>I can pass a URL as a parameter and I will receive a shortened
            URL in the JSON response.
-           <h5>Usage:<pre>https://little-url.herokuapp.com/new/https://www.google.com</pre>
+           <h5>Usage:<pre>https://aurlshortener.herokuapp.com/new/https://www.google.com</pre>
            <h5>Output:<pre>{ "original_url":"http://foo.com:80", "short_url":"https://little-url.herokuapp.com/8170" }</pre>
          </li>
          <li>If I pass an invalid URL that doesn't follow the valid
            http://www.example.com format, the JSON response will contain an
            error instead.
-           <h5>Usage:<pre>localhost:3000/new/blahblahblah</pre>
+           <h5>Usage:<pre>https://aurlshortener.herokuapp.com/new/blahblahblah</pre>
            <h5>Output:<pre>{"error":"Incorrect URL format. Ensure that your URL has a valid protocol and format. blahblahblah"}</pre>
          </li>
          <li>When I visit that shortened URL, it will redirect me to my
            original link.
-           <h5>Usage:<pre>https://little-url.herokuapp.com/2871</pre>
+           <h5>Usage:<pre>https://aurlshortener.herokuapp.com/2871</pre>
            <h5>Output:<pre>https://www.google.com/</pre>
          </li>
          <li>When I pass the 'urls' keyword in the url, all the URLs in the
            database will be displayed in JSON format.
-           <h5>Usage:<pre>https://little-url.herokuapp.com/urls</pre>
+           <h5>Usage:<pre>https://aurlshortener.herokuapp.com/urls</pre>
            <h5>Output:<pre>{"urls":[{"_id":"58a860775d711608d7c607fc","url":"http://www.google.com","short_code":"rylKxkIYg"}]}</pre>
          </li>
          <li>When I pass the 'delete' keyword in the url along with either a
            parameter containing the URL or its shortcode, that URL will be
            deleted from the database.
-           <h5>Usage (URL):<pre>https://little-url.herokuapp.com/delete/www.google.com</pre>
+           <h5>Usage (URL):<pre>https://aurlshortener.herokuapp.com/delete/www.google.com</pre>
            <h5>Output (URL):<pre>{"entry_deleted": [{"_id":"58a860775d711608d7c607fc","url":"http://www.google.com","short_code":"rylKxkIYg"}]}</pre>
-           <h5>Usage (short code):<pre>https://little-url.herokuapp.com/delete/rylKxkIYg</pre>
+           <h5>Usage (short code):<pre>https://aurlshortener.herokuapp.com/delete/rylKxkIYg</pre>
            <h5>Output (short code):<pre>{"entry_deleted": [{"_id":"58a860775d711608d7c607fc","url":"http://www.google.com","short_code":"rylKxkIYg"}]}</pre>
          </li>
       </ol>
