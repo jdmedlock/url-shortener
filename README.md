@@ -1,6 +1,6 @@
-#freeCodeCamp Backend Certificate API Project - URL Shortener Microservice
+# freeCodeCamp Backend Certificate API Project - URL Shortener Microservice
 
-##Objective  
+## Objective  
 
 Build a full stack JavaScript app that is functionally similar to this: https://little-url.herokuapp.com/ and deploy it to Heroku. Note that for each
 project, you should create a new GitHub repository and a new Heroku project.
@@ -9,7 +9,7 @@ If you can't remember how to do this, revisit https://freecodecamp.com/challenge
 Checkout this wiki article for tips on integrating MongoDB on Heroku.
 https://github.com/FreeCodeCamp/FreeCodeCamp/wiki/Using-MongoDB-And-Deploying-To-Heroku
 
-##User Stories
+## User Stories
 
 Implement the following users stories in this exercise.
 
@@ -51,14 +51,14 @@ Implement the following users stories in this exercise.
 
   **Output:** ```{"entry_deleted": [{"_id":"58a860775d711608d7c607fc","url":"http://www.google.com","short_code":"rylKxkIYg"}]}```
 
-##Project Dependencies
+## Project Dependencies
 
 - Express
 - MongoDB
 - NodeJS
 - Valid-Url
 
-##Project Creation
+## Project Creation
 
 1. mkdir urlshortener
 2. cd urlshortener
@@ -69,7 +69,7 @@ Implement the following users stories in this exercise.
 5. echo node_modules > .gitignore
   - Exclude files in the node_modules directory from being managed by git.
 
-##Project Runtimes (Local)
+## Project Runtimes (Local)
 
 1. mongodb
   - Start the MongoDB server
