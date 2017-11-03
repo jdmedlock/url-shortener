@@ -27,18 +27,21 @@ Implement the following users stories in this exercise.
   **Usage:** ```https://aurlshortener.herokuapp.com/new/blahblahblah```
 
   **Output:** ```{"error":"Incorrect URL format. Ensure that your URL has a valid protocol and format. blahblahblah"}```
+  
 3. When I visit that shortened URL, it will redirect me to my
   original link.
 
   **Usage:** ```https://aurlshortener.herokuapp.com/Sk_ROHIYx```
 
   **Output:** ```https://www.google.com/```
+  
 4. When I pass the 'urls' keyword in the url, all the URLs in the
   database will be displayed in JSON format.
 
   **Usage:** ```https://aurlshortener.herokuapp.com/urls```
 
   **Output:** ```{"urls":[{"_id":"58a860775d711608d7c607fc","url":"http://www.google.com","short_code":"rylKxkIYg"}]}```
+  
 5. When I pass the 'delete' keyword in the url along with either a
   parameter containing the URL or its shortcode, that URL will be
   deleted from the database.
